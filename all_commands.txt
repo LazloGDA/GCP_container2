@@ -1,0 +1,36 @@
+lazlo@localpc GCP_container2 % git init
+lazlo@localpc GCP_container2 % nano requirements.txt
+lazlo@localpc GCP_container2 % vi app.py
+lazlo@localpc GCP_container2 % vi Dockerfile
+lazlo@localpc GCP_container2 % vi vm_config.txt           
+lazlo@localpc GCP_container2 % gcloud auth login
+lazlo@localpc GCP_container2 % gcloud compute instances create webserver-vm --machine-type=e2-small --image-family=ubuntu-2204-lts --provisioning-model=SPOT --image-project=ubuntu-os-cloud --metadata-from-file=startup-script=startup_script
+lazlo@localpc GCP_container2 % gcloud compute ssh lazlo@webserver-vm
+lazlo@webserver-vm:~$ exit
+lazlo@localpc GCP_container2 % man scp
+lazlo@localpc GCP_container2 % ls
+lazlo@localpc GCP_container2 % gcloud compute scp ./requirements.txt lazlo@webserver-vm:
+lazlo@localpc GCP_container2 % gcloud compute scp ./app.py lazlo@webserver-vm: 
+lazlo@localpc GCP_container2 % gcloud compute scp ./Dockerfile lazlo@webserver-vm: 
+lazlo@localpc GCP_container2 % gcloud compute ssh lazlo@webserver-vm                    
+lazlo@webserver-vm:~$ ls
+lazlo@webserver-vm:~$ sudo docker pull python:3.8-slim
+lazlo@webserver-vm:~$ sudo docker build -t python-mongo-docker .
+lazlo@webserver-vm:~$ docker build -t python-mongo-docker .
+lazlo@webserver-vm:~$ sudo docker build -t python-mongo-docker .
+lazlo@webserver-vm:~$ mkdir docbuild
+lazlo@webserver-vm:~$ ls
+lazlo@webserver-vm:~$ mv Dockerfile ./docbuild/
+lazlo@webserver-vm:~$ mv requirements.txt ./docbuild/
+lazlo@webserver-vm:~$ mv app.py ./docbuild/
+lazlo@webserver-vm:~$ cd docbuild/
+lazlo@webserver-vm:~/docbuild$ ls
+lazlo@webserver-vm:~/docbuild$ sudo docker build -t python-mongo-docker .
+lazlo@webserver-vm:~/docbuild$ sudo docker run -d --name mongodb mongo
+lazlo@webserver-vm:~/docbuild$ sudo docker run -d --link mongodb python-mongo-docker
+lazlo@webserver-vm:~/docbuild$ sudo docker ps -a
+lazlo@webserver-vm:~/docbuild$ sudo docker exec -it mongodb bash
+root@8f664908126a:/# mongosh
+root@8f664908126a:/# exit
+lazlo@webserver-vm:~/docbuild$ exit
+lazlo@localpc GCP_container2 % gcloud compute instances delete webserver-vm 

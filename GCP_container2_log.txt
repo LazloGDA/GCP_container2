@@ -1,0 +1,219 @@
+lazlo@localpc GCP_container2 % git init
+Initialized empty Git repository in /Users/lazlo/gdaproject/GCP_container2/.git/
+lazlo@localpc GCP_container2 % nano requirements.txt
+lazlo@localpc GCP_container2 % vi app.py
+lazlo@localpc GCP_container2 % vi Dockerfile
+lazlo@localpc GCP_container2 % vi vm_config.txt           
+lazlo@localpc GCP_container2 % gcloud auth login
+lazlo@localpc GCP_container2 % gcloud compute instances create webserver-vm --machine-type=e2-small --image-family=ubuntu-2204-lts --provisioning-model=SPOT --image-project=ubuntu-os-cloud --metadata-from-file=startup-script=startup_script
+Created [https://www.googleapis.com/compute/v1/projects/gdabootcamp/zones/europe-west3-c/instances/webserver-vm].
+NAME          ZONE            MACHINE_TYPE  PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP     STATUS
+webserver-vm  europe-west3-c  e2-small      true         10.156.0.5   35.246.156.253  RUNNING
+lazlo@localpc GCP_container2 % gcloud compute ssh lazlo@webserver-vm
+Enter passphrase for key '/Users/lazlo/.ssh/google_compute_engine': 
+Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 6.2.0-1019-gcp x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+  System information as of Wed Jan 24 10:27:06 UTC 2024
+
+  System load:  0.076171875       Processes:                126
+  Usage of /:   23.9% of 9.51GB   Users logged in:          0
+  Memory usage: 16%               IPv4 address for docker0: 172.17.0.1
+  Swap usage:   0%                IPv4 address for ens4:    10.156.0.5
+
+
+Expanded Security Maintenance for Applications is not enabled.
+
+2 updates can be applied immediately.
+2 of these updates are standard security updates.
+To see these additional updates run: apt list --upgradable
+
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+
+
+
+The programs included with the Ubuntu system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+applicable law.
+
+lazlo@webserver-vm:~$ exit
+logout
+Connection to 35.246.156.253 closed.
+lazlo@localpc GCP_container2 % man scp
+Unknown locale, assuming C
+lazlo@localpc GCP_container2 % ls
+Dockerfile		requirements.txt	vm_config.txt
+app.py			startup_script
+lazlo@localpc GCP_container2 % gcloud compute scp ./requirements.txt lazlo@webserver-vm:
+Enter passphrase for key '/Users/lazlo/.ssh/google_compute_engine': 
+requirements.txt                                                    100%   27     1.5KB/s   00:00    
+lazlo@localpc GCP_container2 % gcloud compute scp ./app.py lazlo@webserver-vm: 
+Enter passphrase for key '/Users/lazlo/.ssh/google_compute_engine': 
+Enter passphrase for key '/Users/lazlo/.ssh/google_compute_engine': 
+app.py                                                              100%  387    21.5KB/s   00:00    
+lazlo@localpc GCP_container2 % gcloud compute scp ./Dockerfile lazlo@webserver-vm: 
+Enter passphrase for key '/Users/lazlo/.ssh/google_compute_engine': 
+Dockerfile                                                          100%  162     8.7KB/s   00:00    
+lazlo@localpc GCP_container2 % gcloud compute ssh lazlo@webserver-vm                    
+Enter passphrase for key '/Users/lazlo/.ssh/google_compute_engine': 
+Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 6.2.0-1019-gcp x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+  System information as of Wed Jan 24 10:34:55 UTC 2024
+
+  System load:  0.0               Processes:                119
+  Usage of /:   23.9% of 9.51GB   Users logged in:          0
+  Memory usage: 16%               IPv4 address for docker0: 172.17.0.1
+  Swap usage:   0%                IPv4 address for ens4:    10.156.0.5
+
+
+Expanded Security Maintenance for Applications is not enabled.
+
+2 updates can be applied immediately.
+2 of these updates are standard security updates.
+To see these additional updates run: apt list --upgradable
+
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+
+
+Last login: Wed Jan 24 10:27:07 2024 from 79.120.248.60
+lazlo@webserver-vm:~$ ls
+Dockerfile  app.py  requirements.txt
+lazlo@webserver-vm:~$ sudo docker pull python:3.8-slim
+3.8-slim: Pulling from library/python
+2f44b7a888fa: Pull complete 
+3f00b3697662: Pull complete 
+fa8b5ed51b61: Pull complete 
+26916576c92c: Pull complete 
+76530ff9b004: Pull complete 
+Digest: sha256:a92a4fd9129160a074f537482b2db341c8e9d6e04a07bfb0867228ae981b4165
+Status: Downloaded newer image for python:3.8-slim
+docker.io/library/python:3.8-slim
+lazlo@webserver-vm:~$ sudo docker build -t python-mongo-docker .
+error checking context: no permission to read from '/home/lazlo/.bash_history'
+lazlo@webserver-vm:~$ docker build -t python-mongo-docker .
+error checking context: no permission to read from '/home/lazlo/.bash_history'
+lazlo@webserver-vm:~$ sudo docker build -t python-mongo-docker .
+error checking context: no permission to read from '/home/lazlo/.bash_history'
+lazlo@webserver-vm:~$ mkdir docbuild
+lazlo@webserver-vm:~$ ls
+Dockerfile  app.py  docbuild  requirements.txt  snap
+lazlo@webserver-vm:~$ mv Dockerfile ./docbuild/
+lazlo@webserver-vm:~$ mv requirements.txt ./docbuild/
+lazlo@webserver-vm:~$ mv app.py ./docbuild/
+lazlo@webserver-vm:~$ cd docbuild/
+lazlo@webserver-vm:~/docbuild$ ls
+Dockerfile  app.py  requirements.txt
+lazlo@webserver-vm:~/docbuild$ sudo docker build -t python-mongo-docker .
+Sending build context to Docker daemon  4.096kB
+Step 1/6 : FROM python:3.8-slim
+ ---> 23d9c64de429
+Step 2/6 : WORKDIR /app
+ ---> Running in 8c47e5003619
+Removing intermediate container 8c47e5003619
+ ---> d6e624147012
+Step 3/6 : COPY requirements.txt /app/
+ ---> 4d2627895061
+Step 4/6 : RUN pip install -r requirements.txt
+ ---> Running in 5abe3b38d3b6
+Collecting pymongo
+  Downloading pymongo-4.6.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (693 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 693.2/693.2 kB 17.0 MB/s eta 0:00:00
+Collecting dnspython<3.0.0,>=1.16.0
+  Downloading dnspython-2.5.0-py3-none-any.whl (305 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 305.4/305.4 kB 32.2 MB/s eta 0:00:00
+Installing collected packages: dnspython, pymongo
+Successfully installed dnspython-2.5.0 pymongo-4.6.1
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+
+[notice] A new release of pip is available: 23.0.1 -> 23.3.2
+[notice] To update, run: pip install --upgrade pip
+Removing intermediate container 5abe3b38d3b6
+ ---> 80567dfd3859
+Step 5/6 : COPY app.py /app/
+ ---> 003ab371704f
+Step 6/6 : CMD ["python", "app.py"]
+ ---> Running in 00ce02657386
+Removing intermediate container 00ce02657386
+ ---> 626fe7d095e5
+Successfully built 626fe7d095e5
+Successfully tagged python-mongo-docker:latest
+lazlo@webserver-vm:~/docbuild$ sudo docker run -d --name mongodb mongo
+Unable to find image 'mongo:latest' locally
+latest: Pulling from library/mongo
+29202e855b20: Pull complete 
+7513301b17d7: Pull complete 
+8584f3ef3048: Pull complete 
+5b7464f50635: Pull complete 
+c6ff633f781c: Pull complete 
+5644f6e5c0e6: Pull complete 
+d930da07d87d: Pull complete 
+06fc900f7e64: Pull complete 
+17a4f29a303b: Pull complete 
+Digest: sha256:192e2724093257a7db12db6cbafd92e3e5d51937f13846d49ea555cea85787ce
+Status: Downloaded newer image for mongo:latest
+8f664908126ab4e56f620b1e69b5b9fa619c53cf624a5445392d67f2a4cd6306
+lazlo@webserver-vm:~/docbuild$ sudo docker run -d --link mongodb python-mongo-docker
+19a21a411aa3504156d14f61eb9811fae56edbe4b6a50628e52b43396dc96e8e
+lazlo@webserver-vm:~/docbuild$ sudo docker ps -a
+CONTAINER ID   IMAGE                 COMMAND                  CREATED              STATUS                     PORTS       NAMES
+19a21a411aa3   python-mongo-docker   "python app.py"          6 seconds ago        Exited (0) 3 seconds ago               compassionate_poincare
+8f664908126a   mongo                 "docker-entrypoint.s…"   About a minute ago   Up About a minute          27017/tcp   mongodb
+lazlo@webserver-vm:~/docbuild$ sudo docker exec -it mongodb bash
+root@8f664908126a:/# mongosh
+Current Mongosh Log ID:	65b0eb50d777139b6a086c8d
+Connecting to:		mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.1.1
+Using MongoDB:		7.0.5
+Using Mongosh:		2.1.1
+
+For mongosh info see: https://docs.mongodb.com/mongodb-shell/
+
+
+To help improve our products, anonymous usage data is collected and sent to MongoDB periodically (https://www.mongodb.com/legal/privacy-policy).
+You can opt-out by running the disableTelemetry() command.
+
+------
+   The server generated these startup warnings when booting
+   2024-01-24T10:47:23.833+00:00: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine. See http://dochub.mongodb.org/core/prodnotes-filesystem
+   2024-01-24T10:47:24.510+00:00: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+   2024-01-24T10:47:24.511+00:00: Soft rlimits for open file descriptors too low
+------
+
+test> use testdb
+switched to db testdb
+testdb> show collections
+testcollection
+testdb> db.testcollection.find()
+[
+  {
+    _id: ObjectId('65b0eb018f0c5644df57537d'),
+    message: 'Hello from Python to MongoDB!',
+    timestamp: ISODate('2024-01-24T10:48:33.256Z')
+  }
+]
+testdb> exit
+root@8f664908126a:/# exit
+exit
+lazlo@webserver-vm:~/docbuild$ exit
+logout
+Connection to 35.246.156.253 closed.
+lazlo@localpc GCP_container2 % gcloud compute instances delete webserver-vm 
+The following instances will be deleted. Any attached disks configured to be auto-deleted will be deleted unless they are attached to any other instances or the 
+`--keep-disks` flag is given and specifies them for keeping. Deleting a disk is irreversible and any data on the disk will be lost.
+ - [webserver-vm] in [europe-west3-c]
+
+Do you want to continue (Y/n)?  Y
+
+Deleted [https://www.googleapis.com/compute/v1/projects/gdabootcamp/zones/europe-west3-c/instances/webserver-vm].
+lazlo@localpc GCP_container2 % 
