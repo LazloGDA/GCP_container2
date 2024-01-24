@@ -18,7 +18,7 @@ testdb> db.testcollection.find()
   }
 ]
 
-More info in the these files:
+More info in these files:
 
 - GCP_container_log.txt
 - all_commands.txt
